@@ -22,11 +22,14 @@ class usuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = ['id', 'nombre', 'email', 'password']
+    
 
 class equipoTrabajoSerializer(serializers.ModelSerializer):
     class Meta:
         model = EquipoTrabajo
         fields = '__all__'
+    def searchAllEquipoTrabajoPerUser(self, user):
+        return EquipoTrabajo.objects.filter(usuarios=user)
 
 
 class rolesSerializer(serializers.ModelSerializer):

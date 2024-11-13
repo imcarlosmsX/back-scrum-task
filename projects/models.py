@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -50,8 +51,7 @@ class EquipoTrabajo(models.Model):
     nombre_equipo = models.CharField(max_length=255)
     descripcion_equipo = models.TextField()
 
-    def __str__(self):
-        return self.nombre_equipo
+    
 
 
 class Roles(models.Model):
@@ -82,7 +82,7 @@ class UsuarioEquipo(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     equipo_trabajo = models.ForeignKey(EquipoTrabajo, on_delete=models.CASCADE)
     es_creador = models.BooleanField(default=False)
-
+   
     def __str__(self):
         return f"{self.usuario} - {self.equipo_trabajo} - Creador: {self.es_creador}"
 

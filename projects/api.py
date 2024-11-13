@@ -8,6 +8,7 @@ from .serializers import RegistroUsuarioSerializer, CustomTokenObtainPairSeriali
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.decorators import action
 
 class usuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
@@ -31,8 +32,30 @@ class proyectoViewSet(viewsets.ModelViewSet):
 
 class usuarioEquipoViewSet(viewsets.ModelViewSet):
     queryset = UsuarioEquipo.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = usuarioEquipoSerializer
+
+    @swagger_auto_schema(
+        operation_description="Obtener los equipos de trabajo asociados al usuario autenticado.",
+        responses={
+            200: equipoTrabajoSerializer(many=True),
+            401: 'No autenticado',
+            404: 'Usuario no encontrado o sin equipos asociados'
+        },
+        security=[{'Bearer': []}]
+    )
+    @action(detail=False, methods=['get'])
+    def getEquipoTrabajoPerUser(self, request):
+        user = request.user
+
+        equipos = EquipoTrabajo.objects.filter(
+            id__in=UsuarioEquipo.objects.filter(usuario=user).values_list('equipo_trabajo_id', flat=True)
+        )
+        if not equipos.exists():
+            return Response({'error': 'Usuario no encontrado o sin equipos asociados'}, status=404)
+
+        serializer = equipoTrabajoSerializer(equipos, many=True)
+        return Response(serializer.data)
 
 class tareaViewSet(viewsets.ModelViewSet):
     queryset = Tarea.objects.all()
