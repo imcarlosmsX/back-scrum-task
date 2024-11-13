@@ -1,6 +1,10 @@
 from .models import *
 from rest_framework import viewsets, permissions
 from .serializers import *
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import RegistroUsuarioSerializer
 
 class usuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
@@ -42,3 +46,12 @@ class comentarioViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = comentarioSerializer
 
+class RegistroUsuarioView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = RegistroUsuarioSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

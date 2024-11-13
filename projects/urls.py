@@ -1,14 +1,14 @@
-from rest_framework import routers
-from .api import *
-router = routers.DefaultRouter()
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .api import usuarioViewSet, equipoTrabajoViewSet, rolesViewSet, proyectoViewSet, RegistroUsuarioView
 
-router.register('usuario', usuarioViewSet, 'usuario')
-router.register('equipoTrabajo', equipoTrabajoViewSet, 'equipoTrabajo')
-router.register('roles', rolesViewSet, 'roles')
-router.register('proyecto', proyectoViewSet, 'proyecto')
-router.register('usuarioEquipo', usuarioEquipoViewSet, 'usuarioEquipo')
-router.register('tarea', tareaViewSet, 'tarea')
-router.register('sprint', sprintViewSet, 'sprint')
-router.register('comentario', comentarioViewSet, 'comentario')
+router = DefaultRouter()
+router.register(r'usuarios', usuarioViewSet)
+router.register(r'equipos', equipoTrabajoViewSet)
+router.register(r'roles', rolesViewSet)
+router.register(r'proyectos', proyectoViewSet)
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('api/', include(router.urls)),
+    path('api/registro/', RegistroUsuarioView.as_view(), name='registro_usuario'),
+]
