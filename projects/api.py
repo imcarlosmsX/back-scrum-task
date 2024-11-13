@@ -4,7 +4,10 @@ from .serializers import *
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RegistroUsuarioSerializer
+from .serializers import RegistroUsuarioSerializer, CustomTokenObtainPairSerializer
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 class usuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
@@ -49,9 +52,29 @@ class comentarioViewSet(viewsets.ModelViewSet):
 class RegistroUsuarioView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @swagger_auto_schema(
+        request_body=RegistroUsuarioSerializer,
+        responses={
+            201: openapi.Response('Usuario creado exitosamente', RegistroUsuarioSerializer),
+            400: 'Solicitud incorrecta'
+        }
+    )
     def post(self, request, *args, **kwargs):
         serializer = RegistroUsuarioSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+    @swagger_auto_schema(
+        request_body=CustomTokenObtainPairSerializer,
+        responses={
+            200: openapi.Response('Token obtenido exitosamente'),
+            400: 'Solicitud incorrecta'
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)

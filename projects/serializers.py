@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import *
+from django.contrib.auth import authenticate
 
 class RegistroUsuarioSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -19,7 +21,7 @@ class RegistroUsuarioSerializer(serializers.ModelSerializer):
 class usuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = '__all__'
+        fields = ['id', 'nombre', 'email', 'password']
 
 class equipoTrabajoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,3 +60,19 @@ class comentarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comentario
         fields = '__all__'
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = 'email'
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        if email and password:
+            attrs[self.username_field] = email
+        else:
+            raise serializers.ValidationError("Debe incluir un correo electrónico y una contraseña.")
+
+        return super().validate(attrs)
