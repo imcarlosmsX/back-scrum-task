@@ -67,6 +67,7 @@ class Tarea(models.Model):
     fecha_fin_tarea = models.DateField()
     estado_tarea = models.CharField(max_length=50)
     sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, related_name="tareas")
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.nombre_tarea
