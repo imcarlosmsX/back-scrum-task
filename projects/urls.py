@@ -1,7 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .api import usuarioViewSet, equipoTrabajoViewSet, rolesViewSet, proyectoViewSet, RegistroUsuarioView, CustomTokenObtainPairView
-from rest_framework import permissions
+from .api import *
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -10,6 +9,12 @@ router.register(r'usuarios', usuarioViewSet)
 router.register(r'equipos', equipoTrabajoViewSet)
 router.register(r'roles', rolesViewSet)
 router.register(r'proyectos', proyectoViewSet)
+router.register(r'usuariosEquipo', usuarioEquipoViewSet)
+router.register(r'tareas', tareaViewSet)
+router.register(r'sprints', sprintViewSet)
+router.register(r'comentarios', comentarioViewSet)
+
+
 
 schema_view = get_schema_view(
     openapi.Info(
