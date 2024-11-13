@@ -85,6 +85,30 @@ class tareaViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = tareaSerializer
 
+    @swagger_auto_schema(
+        operation_description="Obtener todas las tareas de un sprint específico.",
+        responses={
+            200: tareaSerializer(many=True),
+            400: 'Solicitud incorrecta',
+            404: 'Sprint no encontrado'
+        },
+        manual_parameters=[
+            openapi.Parameter('sprint_id', openapi.IN_QUERY, description="ID del sprint", type=openapi.TYPE_INTEGER)
+        ]
+    )
+    @action(detail=False, methods=['get'])
+    def getTareaPerSprint(self, request):
+        sprint_id = request.query_params.get('sprint_id')
+        if not sprint_id:
+            return Response({'error': 'El parámetro sprint_id es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            tareas = Tarea.objects.filter(sprint_id=sprint_id)
+            serializer = tareaSerializer(tareas, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Sprint.DoesNotExist:
+            return Response({'error': 'Sprint no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
 class sprintViewSet(viewsets.ModelViewSet):
     queryset = Sprint.objects.all()
     permission_classes = [permissions.AllowAny]
