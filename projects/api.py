@@ -55,30 +55,32 @@ class proyectoViewSet(viewsets.ModelViewSet):
 
 class usuarioEquipoViewSet(viewsets.ModelViewSet):
     queryset = UsuarioEquipo.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = usuarioEquipoSerializer
+    permission_classes = [permissions.AllowAny]
+    serializer_class = usuarioSerializer
 
     @swagger_auto_schema(
-        operation_description="Obtener los equipos de trabajo asociados al usuario autenticado.",
+        operation_description="Obtener el equipo de trabajo de un usuario específico.",
         responses={
             200: equipoTrabajoSerializer(many=True),
-            401: 'No autenticado',
-            404: 'Usuario no encontrado o sin equipos asociados'
+            400: 'Solicitud incorrecta',
+            404: 'Usuario no encontrado'
         },
-        security=[{'Bearer': []}]
+        manual_parameters=[
+            openapi.Parameter('usuario_id', openapi.IN_QUERY, description="ID del usuario", type=openapi.TYPE_INTEGER)
+        ]
     )
     @action(detail=False, methods=['get'])
     def getEquipoTrabajoPerUser(self, request):
-        user = request.user
-
-        equipos = EquipoTrabajo.objects.filter(
-            id__in=UsuarioEquipo.objects.filter(usuario=user).values_list('equipo_trabajo_id', flat=True)
-        )
-        if not equipos.exists():
-            return Response({'error': 'Usuario no encontrado o sin equipos asociados'}, status=404)
-
-        serializer = equipoTrabajoSerializer(equipos, many=True)
-        return Response(serializer.data)
+        usuario_id = request.query_params.get('usuario_id')
+        if not usuario_id:
+            return Response({'error': 'El parámetro usuario_id es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            equipos = EquipoTrabajo.objects.filter(usuarioequipo__usuario_id=usuario_id)
+            serializer = equipoTrabajoSerializer(equipos, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Usuario.DoesNotExist:
+            return Response({'error': 'Usuario no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
 class tareaViewSet(viewsets.ModelViewSet):
     queryset = Tarea.objects.all()
