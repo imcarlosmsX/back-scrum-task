@@ -82,6 +82,30 @@ class usuarioEquipoViewSet(viewsets.ModelViewSet):
         except Usuario.DoesNotExist:
             return Response({'error': 'Usuario no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
+    @swagger_auto_schema(
+        operation_description="Obtener todos los usuarios de un equipo de trabajo específico.",
+        responses={
+            200: usuarioSerializer(many=True),
+            400: 'Solicitud incorrecta',
+            404: 'Equipo de trabajo no encontrado'
+        },
+        manual_parameters=[
+            openapi.Parameter('equipo_trabajo_id', openapi.IN_QUERY, description="ID del equipo de trabajo", type=openapi.TYPE_INTEGER)
+        ]
+    )
+    @action(detail=False, methods=['get'])
+    def getUserPerEquipoTrabajo(self, request):
+        equipo_trabajo_id = request.query_params.get('equipo_trabajo_id')
+        if not equipo_trabajo_id:
+            return Response({'error': 'El parámetro equipo_trabajo_id es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            usuarios = Usuario.objects.filter(usuarioequipo__equipo_trabajo_id=equipo_trabajo_id)
+            serializer = usuarioSerializer(usuarios, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except EquipoTrabajo.DoesNotExist:
+            return Response({'error': 'Equipo de trabajo no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
 class tareaViewSet(viewsets.ModelViewSet):
     queryset = Tarea.objects.all()
     permission_classes = [permissions.AllowAny]
