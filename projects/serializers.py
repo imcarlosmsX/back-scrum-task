@@ -32,12 +32,6 @@ class equipoTrabajoSerializer(serializers.ModelSerializer):
         return EquipoTrabajo.objects.filter(usuarios=user)
 
 
-class rolesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Roles
-        fields = '__all__'
-
-
 class proyectoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proyecto

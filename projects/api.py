@@ -21,10 +21,6 @@ class equipoTrabajoViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = equipoTrabajoSerializer
 
-class rolesViewSet(viewsets.ModelViewSet):
-    queryset = Roles.objects.all()
-    permission_classes = [permissions.AllowAny]
-    serializer_class = rolesSerializer
 
 class proyectoViewSet(viewsets.ModelViewSet):
     queryset = Proyecto.objects.all()

@@ -7,7 +7,6 @@ from drf_yasg import openapi
 router = DefaultRouter()
 router.register(r'usuarios', usuarioViewSet)
 router.register(r'equipos', equipoTrabajoViewSet)
-router.register(r'roles', rolesViewSet)
 router.register(r'proyectos', proyectoViewSet)
 router.register(r'usuariosEquipo', usuarioEquipoViewSet)
 router.register(r'tareas', tareaViewSet)

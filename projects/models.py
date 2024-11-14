@@ -51,16 +51,6 @@ class EquipoTrabajo(models.Model):
     nombre_equipo = models.CharField(max_length=255)
     descripcion_equipo = models.TextField()
 
-    
-
-
-class Roles(models.Model):
-    nombre_rol = models.CharField(max_length=100)
-    descripcion_rol = models.TextField()
-    equipo_trabajo = models.ForeignKey(EquipoTrabajo, on_delete=models.CASCADE, related_name="roles")
-
-    def __str__(self):
-        return f"{self.nombre_rol} - {self.equipo_trabajo.nombre_equipo}"
 
 
 class Proyecto(models.Model):
@@ -78,7 +68,6 @@ class Proyecto(models.Model):
 class UsuarioEquipo(models.Model):
     usuario_equipo_id = models.AutoField(primary_key=True)
     fecha_union = models.DateField(auto_now=True)
-    rol_equipo = models.CharField(max_length=100, default="Owner")
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     equipo_trabajo = models.ForeignKey(EquipoTrabajo, on_delete=models.CASCADE)
     es_creador = models.BooleanField(default=False)
