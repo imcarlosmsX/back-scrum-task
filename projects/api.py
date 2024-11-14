@@ -58,7 +58,7 @@ class proyectoViewSet(viewsets.ModelViewSet):
 class usuarioEquipoViewSet(viewsets.ModelViewSet):
     queryset = UsuarioEquipo.objects.all()
     permission_classes = [permissions.AllowAny]
-    serializer_class = usuarioSerializer
+    serializer_class = usuarioEquipoSerializer
 
     @swagger_auto_schema(
         operation_description="Obtener el equipo de trabajo de un usuario específico.",
